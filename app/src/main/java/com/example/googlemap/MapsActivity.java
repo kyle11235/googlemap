@@ -41,7 +41,7 @@ public class MapsActivity extends FragmentActivity {
             public void run() {
 
                 // add marker
-                mapService.addMarker(-34, 151, "My Location");
+                mapService.addMarker(-34, 151, "My Location", MapService.ZOOM_LEVEL_STREET);
 
                 // get current location
                 mapService.getLastLocation(new OnSuccessListener<Location>() {
@@ -51,7 +51,7 @@ public class MapsActivity extends FragmentActivity {
                         Log.e("tag", "getCurrentLocation success");
                         if (location != null) {
                             // Logic to handle location object
-                            mapService.addMarker(location.getLatitude(), location.getLongitude(), "My Location");
+                            mapService.addMarker(location.getLatitude(), location.getLongitude(), "My Location", MapService.ZOOM_LEVEL_STREET);
                         }
                     }
                 }, new OnFailureListener() {
@@ -72,7 +72,7 @@ public class MapsActivity extends FragmentActivity {
                         }
                         for (Location location : locationResult.getLocations()) {
                             // Update UI with location data
-                            mapService.addMarker(location.getLatitude(), location.getLongitude(), "My Location");
+                            mapService.addMarker(location.getLatitude(), location.getLongitude(), "My Location", MapService.ZOOM_LEVEL_STREET);
                             location.getAltitude();
                             location.getSpeed();
                             location.distanceTo(location); // pass starting location into it

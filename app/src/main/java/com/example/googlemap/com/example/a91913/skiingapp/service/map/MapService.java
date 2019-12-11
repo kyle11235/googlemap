@@ -6,10 +6,14 @@ import com.google.android.gms.tasks.OnSuccessListener;
 
 public interface MapService {
 
+    public static final int ZOOM_LEVEL_STREET = 15;
+    public static final int ZOOM_LEVEL_BLOCK = 20;
+
     public Boolean isMapReady();
-    public Boolean addMarker(double lat, double lng, String title);
     public void getLastLocation(OnSuccessListener listener, OnFailureListener failureListener);
     public void startLocationUpdates(LocationCallback locationCallback);
     public void stopLocationUpdates(LocationCallback locationCallback);
+    public Boolean addMarker(double lat, double lng, String title, int zoomLevel);
+    public void zoomTo(int level);
 
 }

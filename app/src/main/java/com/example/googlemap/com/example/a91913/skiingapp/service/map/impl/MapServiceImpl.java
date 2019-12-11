@@ -26,6 +26,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -150,15 +151,26 @@ public class MapServiceImpl implements OnMapReadyCallback, MapService {
      * installed Google Play services and returned to the app.
      */
     @Override
-    public Boolean addMarker(double lat, double lng, String title) {
+    public Boolean addMarker(double lat, double lng, String title, int zoomLevel) {
         Log.e("tag", "addMarker");
         if (!isMapReady) {
             return false;
         }
-        LatLng sydney = new LatLng(lat, lng);
-        map.addMarker(new MarkerOptions().position(sydney).title(title));
-        map.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        map.clear();
+
+        LatLng position = new LatLng(lat, lng);
+
+        Marker marker = map.addMarker(new MarkerOptions().position(position).title(title));
+        marker.showInfoWindow();
+
+        map.moveCamera(CameraUpdateFactory.newLatLng(position));
+        this.zoomTo(zoomLevel);
         return true;
+    }
+
+    @Override
+    public void zoomTo(int level){
+        map.moveCamera(CameraUpdateFactory.zoomTo(level));
     }
 
     public void checkPermission() {
