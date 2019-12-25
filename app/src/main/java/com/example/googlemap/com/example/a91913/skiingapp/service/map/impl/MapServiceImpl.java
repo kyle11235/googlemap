@@ -1,6 +1,7 @@
 package com.example.googlemap.com.example.a91913.skiingapp.service.map.impl;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -23,6 +24,7 @@ import com.google.android.gms.location.LocationSettingsResponse;
 import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
@@ -34,8 +36,11 @@ import com.google.android.gms.tasks.Task;
 
 public class MapServiceImpl implements OnMapReadyCallback, MapService {
 
+    private static final String TAG = "HOOK";
+
+    private Activity activity;
+    private SupportMapFragment fragment;
     private GoogleMap map;
-    private SupportMapFragment mapFragment;
     private Boolean isMapReady = false;
 
     // prepare client
@@ -45,12 +50,22 @@ public class MapServiceImpl implements OnMapReadyCallback, MapService {
     // client
     private FusedLocationProviderClient fusedLocationClient;
 
-
-    public MapServiceImpl(SupportMapFragment mapFragment, int interval, int fastestInterval, int accuracy) {
+    // LocationRequest.PRIORITY_HIGH_ACCURACY
+    public MapServiceImpl(SupportMapFragment fragment, int interval, int fastestInterval, int accuracy) {
 
         // getMapAsync(this) -> onMapReady
-        this.mapFragment = mapFragment;
-        this.mapFragment.getMapAsync(this);
+        this.activity = fragment.getActivity();
+        this.fragment = fragment;
+
+        // show
+        fragment.onResume();
+        try {
+            MapsInitializer.initialize(activity.getApplicationContext());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        this.fragment.getMapAsync(this);
+
 
         // prepare client
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -63,11 +78,10 @@ public class MapServiceImpl implements OnMapReadyCallback, MapService {
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
         builder.addLocationRequest(locationRequest);
 
-        SettingsClient client = LocationServices.getSettingsClient(this.mapFragment.getActivity());
+        SettingsClient client = LocationServices.getSettingsClient(activity);
         Task<LocationSettingsResponse> task = client.checkLocationSettings(builder.build());
 
-        final SupportMapFragment finalMapFragment = this.mapFragment;
-        task.addOnSuccessListener(finalMapFragment.getActivity(), new OnSuccessListener<LocationSettingsResponse>() {
+        task.addOnSuccessListener(activity, new OnSuccessListener<LocationSettingsResponse>() {
             @Override
             public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
                 // All location settings are satisfied. The client can initialize
@@ -76,7 +90,8 @@ public class MapServiceImpl implements OnMapReadyCallback, MapService {
             }
         });
 
-        task.addOnFailureListener(finalMapFragment.getActivity(), new OnFailureListener() {
+        final Activity finalActivity = activity;
+        task.addOnFailureListener(activity, new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
                 if (e instanceof ResolvableApiException) {
@@ -86,7 +101,7 @@ public class MapServiceImpl implements OnMapReadyCallback, MapService {
                         // Show the dialog by calling startResolutionForResult(),
                         // and check the result in onActivityResult().
                         ResolvableApiException resolvable = (ResolvableApiException) e;
-                        resolvable.startResolutionForResult(finalMapFragment.getActivity(),
+                        resolvable.startResolutionForResult(finalActivity,
                                 REQUEST_CHECK_SETTINGS);
                     } catch (IntentSender.SendIntentException sendEx) {
                         // Ignore the error.
@@ -96,7 +111,7 @@ public class MapServiceImpl implements OnMapReadyCallback, MapService {
         });
 
         // client
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this.mapFragment.getActivity());
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(activity);
 
     }
 
@@ -117,13 +132,13 @@ public class MapServiceImpl implements OnMapReadyCallback, MapService {
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
         isMapReady = true;
-        Log.e("tag", "isMapReady=true");
+        Log.e(TAG, "isMapReady=true");
     }
 
     @Override
     public void getLastLocation(OnSuccessListener successListener, OnFailureListener failureListener) {
-        fusedLocationClient.getLastLocation().addOnSuccessListener(mapFragment.getActivity(), successListener);
-        fusedLocationClient.getLastLocation().addOnFailureListener(mapFragment.getActivity(), failureListener);
+        fusedLocationClient.getLastLocation().addOnSuccessListener(activity, successListener);
+        fusedLocationClient.getLastLocation().addOnFailureListener(activity, failureListener);
     }
 
     @Override
@@ -152,8 +167,9 @@ public class MapServiceImpl implements OnMapReadyCallback, MapService {
      */
     @Override
     public Boolean addMarker(double lat, double lng, String title, int zoomLevel) {
-        Log.e("tag", "addMarker");
+        Log.e(TAG, "addMarker");
         if (!isMapReady) {
+            Log.e(TAG, "map is not ready");
             return false;
         }
         map.clear();
@@ -174,10 +190,10 @@ public class MapServiceImpl implements OnMapReadyCallback, MapService {
     }
 
     public void checkPermission() {
-        if (ContextCompat.checkSelfPermission(mapFragment.getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
-                ContextCompat.checkSelfPermission(mapFragment.getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
+        if (ContextCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
         ) {
-            ActivityCompat.requestPermissions(mapFragment.getActivity(),
+            ActivityCompat.requestPermissions(activity,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
                     123);
         }
