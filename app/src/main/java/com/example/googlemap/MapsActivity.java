@@ -13,7 +13,7 @@ import com.example.googlemap.com.example.a91913.skiingapp.service.map.impl.MapSe
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
-import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.libraries.maps.SupportMapFragment;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 
