@@ -172,7 +172,6 @@ public class MapServiceImpl implements OnMapReadyCallback, MapService {
             Log.e(TAG, "map is not ready");
             return false;
         }
-        map.clear();
 
         LatLng position = new LatLng(lat, lng);
 
@@ -187,6 +186,11 @@ public class MapServiceImpl implements OnMapReadyCallback, MapService {
     @Override
     public void zoomTo(int level){
         map.moveCamera(CameraUpdateFactory.zoomTo(level));
+    }
+
+    @Override
+    public void clear(){
+        map.clear();
     }
 
     public void checkPermission() {
