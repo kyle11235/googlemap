@@ -15,5 +15,6 @@ public interface MapService {
     public void stopLocationUpdates(LocationCallback locationCallback);
     public Boolean addMarker(double lat, double lng, String title, int zoomLevel);
     public void zoomTo(int level);
+    public void clear();
 
 }
