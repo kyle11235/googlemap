@@ -3,6 +3,17 @@
         https://developers.google.com/maps/documentation/android-sdk/v3-client-migration
         maps sdk v3 still needs google play service
 
+        // master-v3
+        implementation 'com.google.android.gms:play-services-basement:15.0.1'
+        implementation 'com.google.android.gms:play-services-base:15.0.1'
+        implementation 'com.google.android.gms:play-services-gcm:15.0.1'
+        implementation 'com.google.android.gms:play-services-location:15.0.1'
+
+        // maps-v2
+        implementation 'com.google.android.gms:play-services-location:17.0.0'
+        implementation 'com.google.android.gms:play-services-maps:16.1.0'
+
+
 - coolpad android 5.1
 
         - google service framework
@@ -47,8 +58,9 @@
                 su谷歌安装器 -> 安装成功，open googlemap -> 您必须先更新goole play服务，然后才能运行googlemap 
                 -> check info from studio -> Google Play services out of date.  Requires 11925000 but found 10084246
                 -> click update from play stpre -> 提示谷歌服务已停止 -> uninstall existing and install play store from su谷歌安装器 
-                -> open play store -> 谷歌服务已停止 -> Requires 12451000 but found 10084246
+                -> open play store -> 谷歌服务已停止 -> Google Play services out of date.  Requires 11925000 but found 10084246
                 
-- huawei 4.2
+- huawei 4.2 (菜单按键 not work, cannot shutdown some app)
 
         not work, app cannot start
+
