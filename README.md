@@ -62,5 +62,21 @@
                 
 - huawei 4.2 (菜单按键 not work, cannot shutdown some app)
 
-        not work, app cannot start
+        - su谷歌安装器
+        cannot find it from wandoujia / pp assist, apk from wandoujia web does not work
+
+        - google play service
+        install from wandoujia
+
+        - play store
+        https://www.apkmirror.com/apk/google-inc/google-play-store/google-play-store-18-3-13-release/google-play-store-18-3-13-all-0-pr-288027794-android-apk-download/
+
+        - open googlemap
+        you have to update google play service first
+        Google Play services out of date.  Requires 11925000 but found 4325038
+
+        - update play store
+        login google account (need clear-internet) -> ...
+        
+
 
