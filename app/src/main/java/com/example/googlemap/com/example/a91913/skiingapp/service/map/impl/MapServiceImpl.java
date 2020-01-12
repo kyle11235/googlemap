@@ -4,15 +4,21 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.location.Location;
 import android.os.Build;
 import android.os.Looper;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.example.googlemap.R;
 import com.example.googlemap.com.example.a91913.skiingapp.service.map.MapService;
 import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -27,6 +33,7 @@ import com.google.android.libraries.maps.GoogleMap;
 import com.google.android.libraries.maps.MapsInitializer;
 import com.google.android.libraries.maps.OnMapReadyCallback;
 import com.google.android.libraries.maps.SupportMapFragment;
+import com.google.android.libraries.maps.model.BitmapDescriptorFactory;
 import com.google.android.libraries.maps.model.LatLng;
 import com.google.android.libraries.maps.model.Marker;
 import com.google.android.libraries.maps.model.MarkerOptions;
@@ -166,21 +173,26 @@ public class MapServiceImpl implements OnMapReadyCallback, MapService {
      * installed Google Play services and returned to the app.
      */
     @Override
-    public Boolean addMarker(double lat, double lng, String title, int zoomLevel) {
-        Log.e(TAG, "addMarker");
+    public Boolean addMarker(double lat, double lng, String title) {
+        Log.d(TAG, "addMarker title=" + title);
         if (!isMapReady) {
-            Log.e(TAG, "map is not ready");
+            Log.d(TAG, "map is not ready");
             return false;
         }
-        
+
         LatLng position = new LatLng(lat, lng);
 
+        // marker.showInfoWindow(); // only display 1 at a time -> custom marker
         Marker marker = map.addMarker(new MarkerOptions().position(position).title(title));
-        marker.showInfoWindow();
+        marker.setIcon(BitmapDescriptorFactory.fromBitmap(getIcon(title)));
 
-        map.moveCamera(CameraUpdateFactory.newLatLng(position));
-        this.zoomTo(zoomLevel);
         return true;
+    }
+
+    @Override
+    public void moveTo(double lat, double lng){
+        LatLng position = new LatLng(lat, lng);
+        map.moveCamera(CameraUpdateFactory.newLatLng(position));
     }
 
     @Override
@@ -201,6 +213,20 @@ public class MapServiceImpl implements OnMapReadyCallback, MapService {
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
                     123);
         }
+    }
+
+    public Bitmap getIcon(String title){
+        LinearLayout layout = (LinearLayout) activity.getLayoutInflater().inflate(R.layout.marker, null, false);
+        layout.measure(View.MeasureSpec.makeMeasureSpec(300, View.MeasureSpec.AT_MOST), View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+        layout.layout(0, 0, layout.getMeasuredWidth(), layout.getMeasuredHeight());
+
+        TextView txtTitle = layout.findViewById(R.id.txtTitle);
+        txtTitle.setText(title);
+
+        layout.setDrawingCacheEnabled(true);
+        layout.buildDrawingCache();
+
+        return layout.getDrawingCache();
     }
 
 
